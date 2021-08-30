@@ -4,7 +4,7 @@ set -eo pipefail
 do_tests() {
 	echo
 	cd spec
-	echo 'Testing lua-nuspell'
+	lua -e 'print("Testing lua-nuspell version " .. require("nuspell")._VERSION)'
 	./test.lua
 	cd ..
 }

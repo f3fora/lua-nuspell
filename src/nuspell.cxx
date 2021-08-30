@@ -12,6 +12,14 @@ extern "C" {
 #include <lauxlib.h>
 }
 
+#ifndef VERSION
+#define VERSION "scm"
+#endif
+
+#ifndef PROJECT_NAME
+#define PROJECT_NAME "nuspell"
+#endif
+
 #define MT "Dictionary"
 
 static inline auto return_array_of_pairs(lua_State *L,
@@ -285,7 +293,7 @@ extern "C" auto luaopen_nuspell(lua_State *L) -> int
 #if LUA_VERSION_NUM >= 502
 	luaL_newlib(L, Finder_Regs);
 #else
-	luaL_register(L, "nuspell", Finder_Regs);
+	luaL_register(L, PROJECT_NAME, Finder_Regs);
 #endif
 
 	static const luaL_Reg Dictionary_Regs[] = { { "load_from_path", l_Dictionary_load_from_path },
@@ -309,6 +317,11 @@ extern "C" auto luaopen_nuspell(lua_State *L) -> int
 	lua_setfield(L, -1, "__index");
 
 	lua_setfield(L, -2, MT);
+
+	lua_pushstring(L, VERSION);
+	lua_setfield(L, -2, "_VERSION");
+	lua_pushstring(L, PROJECT_NAME);
+	lua_setfield(L, -2, "_NAME");
 
 	return 1;
 }

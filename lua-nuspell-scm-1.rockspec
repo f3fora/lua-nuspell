@@ -16,6 +16,7 @@ description = {
 build = {
     type = 'cmake',
     variables = {
+        ['PROJ_VERSION'] = version,
         ['LUA_INCDIR'] = '$(LUA_INCDIR)',
         ['LUA_LIBDIR'] = '$(LUA_LIBDIR)',
         ['LUA_LIBDIR_FILE'] = '$(LUA_LIBDIR_FILE)',

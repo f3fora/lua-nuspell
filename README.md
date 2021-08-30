@@ -28,7 +28,7 @@ Tested only on Linux. Feedback wanted!
 
 ## Installation 
 
-### from [LuaRocks](https://luarocks.org)
+### from [LuaRocks](https://luarocks.org/modules/f3fora/lua-nuspell)
 ```
 luarocks install lua-nuspell
 ```
@@ -38,12 +38,11 @@ luarocks install lua-nuspell
 
 Clone and build.
 ```
-luarocks build --local
+luarocks make --local
 ```
 
 ### from Source
 Clone and compile for example for Lua 5.1.
-
 ```
 g++ -fPIC -shared -lnuspell -std=c++17 -I/usr/include/lua5.1/ -o nuspell.so src/nuspell.cxx
 ```
