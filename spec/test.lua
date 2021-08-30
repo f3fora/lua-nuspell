@@ -1,3 +1,5 @@
+#!/usr/bin/env lua
+
 local nuspell = require('nuspell')
 local util = require('util')
 
@@ -62,3 +64,12 @@ local tests = {
 print('==> Testing lua-nuspell\n')
 
 util.run_test_group(tests)
+
+local pass, total = util.run_test_summary()
+
+if pass == total then
+    print('==> Summary: all tests succeeded')
+else
+    print(('==> Summary: %d/%d tests failed'):format(total - pass, total))
+    os.exit(1)
+end

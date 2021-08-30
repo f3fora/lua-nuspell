@@ -1,0 +1,30 @@
+name: Testing
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        luaVersion: ["5.1", "5.2", "5.3", "5.4"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install nuspell
+      run: |
+        sudo add-apt-repository ppa:nuspell/ppa
+        sudo apt-get update
+        sudo apt-get install -y nuspell libnuspell-dev cmake hunspell-en-us
+
+    - uses: actions/checkout@v2
+
+    - uses: leafo/gh-actions-lua@v8
+      with:
+        luaVersion: ${{ matrix.luaVersion }}
+
+    - uses: leafo/gh-actions-luarocks@v4
+
+    - name: runtest.sh
+      run:
+        ./runtest.sh
