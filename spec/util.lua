@@ -1,3 +1,5 @@
+-- testing utility
+-- Thanks to
 -- https://github.com/openresty/lua-cjson
 local M = {}
 
@@ -20,16 +22,6 @@ local function is_one_of(t)
     return type(t) == 'table' and getmetatable(t) == _one_of_mt
 end
 
--- Various common routines used by the Lua CJSON package
---
--- Mark Pulford <mark@kyne.com.au>
-
--- Determine with a Lua table can be treated as an array.
--- Explicitly returns "not an array" for very sparse arrays.
--- Returns:
--- -1   Not an array
--- 0    Empty table
--- >0   Highest index in the array
 local function is_array(table)
     local max = 0
     local count = 0

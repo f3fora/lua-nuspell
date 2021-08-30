@@ -44,6 +44,13 @@ local tests = {
         { 'b' },
     },
     {
+        'load_from_path',
+        nuspell.Dictionary.load_from_path,
+        { 'missing_path' },
+        false,
+        { 'Aff file missing_path.aff not found' },
+    },
+    {
         'Dictionary',
         dictionary,
         { 'true', 'en_US' },

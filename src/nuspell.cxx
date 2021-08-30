@@ -110,7 +110,7 @@ static inline auto read_array_of_pairs(lua_State *L)
  * Get the paths of the default directories to be searched for dictionaries.
  *
  * @function get_default_dir_paths
- * @return dir_paths table of directory paths
+ * @return `dir_paths` table of directory paths
  */
 static auto l_get_default_dir_paths(lua_State *L)
 {
@@ -126,7 +126,7 @@ static auto l_get_default_dir_paths(lua_State *L)
  * @warning This function shall not be called from LibreOffice or modules that may end up being used by LibreOffice. It is mainly intended to be used by the CLI tool.
  *
  * @function get_libreoffice_dir_paths
- * @return dir_paths table of directory paths
+ * @return `dir_paths` table of directory paths
  */
 static auto l_get_libreoffice_dir_paths(lua_State *L)
 {
@@ -145,7 +145,7 @@ static auto l_get_libreoffice_dir_paths(lua_State *L)
  *
  * @function search_dirs_for_dicts
  * @param dir_paths table of directory paths
- * @return dict_list table of the found dictionaries
+ * @return `dict_list` table of the found dictionaries
  */
 static auto l_search_dirs_for_dicts(lua_State *L)
 {
@@ -163,7 +163,7 @@ static auto l_search_dirs_for_dicts(lua_State *L)
  * @see search_dirs_for_dicts
  *
  * @function search_default_dirs_for_dicts
- * @return dict_list table of the found dictionaries
+ * @return `dict_list` table of the found dictionaries
  */
 static auto l_search_default_dirs_for_dicts(lua_State *L)
 {
@@ -181,7 +181,7 @@ static auto l_search_default_dirs_for_dicts(lua_State *L)
  * @function find_dictionary
  * @param dict_list table of the found dictionaries
  * @param dict_name dictionary name
- * @return path of the found dictionary or nil if not found
+ * @return `dict_path` path of the found dictionary or nil if not found
  */
 static auto l_find_dictionary(lua_State *L)
 {
@@ -220,14 +220,20 @@ static auto l_Dictionary_destructor(lua_State *L)
  * @function load_from_path
  * @param file_path_without_extension path *without* extensions (without .dic or
  * .aff)
- * @return Dictionary
+ * @return `Dictionary`
+ * @raise `Dictionary_Loading_Error` on error
  */
 static auto l_Dictionary_load_from_path(lua_State *L)
 {
 	const std::string file_path_without_extensions = luaL_checkstring(L, 1);
 	auto dictionary = (nuspell::Dictionary **)lua_newuserdata(L, sizeof(nuspell::Dictionary *));
 	*dictionary = new nuspell::Dictionary();
-	**dictionary = nuspell::Dictionary::load_from_path(file_path_without_extensions);
+	try {
+		**dictionary = nuspell::Dictionary::load_from_path(file_path_without_extensions);
+	} catch (nuspell::Dictionary_Loading_Error e) {
+		delete *dictionary;
+		return luaL_error(L, e.what());
+	}
 	luaL_getmetatable(L, MT);
 	lua_setmetatable(L, -2);
 	return 1;
@@ -238,7 +244,7 @@ static auto l_Dictionary_load_from_path(lua_State *L)
  *
  * @function spell
  * @param word any word
- * @return is_correct true if correct, false otherwise
+ * @return `is_correct` true if correct, false otherwise
  */
 static auto l_Dictionary_spell(lua_State *L)
 {
@@ -253,7 +259,7 @@ static auto l_Dictionary_spell(lua_State *L)
  *
  * @function suggest
  * @param word incorrect word
- * @return suggestions table populated with the suggestions
+ * @return `suggestions` table populated with the suggestions
  */
 static auto l_Dictionary_suggest(lua_State *L)
 {

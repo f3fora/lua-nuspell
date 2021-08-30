@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 project(lua-nuspell CXX)
 
-set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Binding
 add_library(nuspell MODULE src/nuspell.cxx)
@@ -12,8 +12,8 @@ add_library(nuspell MODULE src/nuspell.cxx)
 set(LUA_INCLUDE_DIR ${LUA_INCDIR})
 set(LUA_LIBRARY "${LUA_LIBDIR}${LUA_LIBDIR_FILE}")
 
-# Nuspell  
-find_package (Nuspell CONFIG REQUIRED)
+# Nuspell
+find_package(Nuspell CONFIG REQUIRED)
 
 set_target_properties(nuspell PROPERTIES PREFIX "")
 set_target_properties(nuspell PROPERTIES COMPILE_FLAGS "${CFLAGS}")
