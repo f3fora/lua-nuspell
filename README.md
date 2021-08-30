@@ -20,6 +20,8 @@
 
 ## Status
 
+[![Test](https://github.com/f3fora/lua-nuspell/actions/workflows/test.yaml/badge.svg)](https://github.com/f3fora/lua-nuspell/actions)
+
 Tested only on Linux. Feedback wanted!
 
 ## Requirements
@@ -32,7 +34,6 @@ Tested only on Linux. Feedback wanted!
 ```
 luarocks install lua-nuspell
 ```
-
 
 ### from RockSpec
 
@@ -49,11 +50,16 @@ g++ -fPIC -shared -lnuspell -std=c++17 -I/usr/include/lua5.1/ -o nuspell.so src/
 
 ## Documentation
 
-Documentation can be generated from the source files with [LDoc](https://github.com/lunarmodules/LDoc) by running:
+Documentation is available with 
+```
+luarocks doc lua-nuspell
+```
+
+Otherwise, it can be generated with [LDoc](https://github.com/lunarmodules/LDoc) by running
 ```
 ldoc .
 ```
-The result can be viewed by opening `doc/index.html` in a web browser.
+and the result can be viewed by opening `doc/index.html` in a web browser.
 
 ### Minimal Example
 
@@ -68,6 +74,7 @@ local dict = nuspell.Dictionary.load_from_path(nuspell.find_dictionary(dirs, lan
 print(dict:spell(word))
 print(unpack(dict:suggest(word)))
 ```
+
 ## License
 
 `lua-nuspell` is licensed under the LGPL version 3 or later, see [LICENSE](LICENSE) for more
