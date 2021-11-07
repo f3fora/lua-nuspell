@@ -5,12 +5,12 @@ jobs:
     name: Cxx Formatting Check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Run clang-format check
-      uses: jidicula/clang-format-action@v3.4.0
-      with:
-        clang-format-version: 11
-        check-path: src
+      - uses: actions/checkout@v2
+      - name: Run clang-format check
+        uses: jidicula/clang-format-action@v3.4.0
+        with:
+          clang-format-version: 11
+          check-path: src
 
   lua-format:
     name: Lua Formatting Check

@@ -11,23 +11,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install nuspell
-      run: |
-        wget https://github.com/nuspell/nuspell/archive/refs/tags/v5.0.0.tar.gz -O - | tar -xz
-        cmake -S nuspell-* -B nuspell-build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=0
-        cmake --build nuspell-build -j 4
-        sudo cmake --install nuspell-build
-        sudo ldconfig
-        rm -rf nuspell-*
+      - name: Install nuspell
+        run: |
+          wget https://github.com/nuspell/nuspell/archive/refs/tags/v5.0.0.tar.gz -O - | tar -xz
+          cmake -S nuspell-* -B nuspell-build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=0
+          cmake --build nuspell-build -j 4
+          sudo cmake --install nuspell-build
+          sudo ldconfig
+          rm -rf nuspell-*
 
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - uses: leafo/gh-actions-lua@v8
-      with:
-        luaVersion: ${{ matrix.luaVersion }}
+      - uses: leafo/gh-actions-lua@v8
+        with:
+          luaVersion: ${{ matrix.luaVersion }}
 
-    - uses: leafo/gh-actions-luarocks@v4
+      - uses: leafo/gh-actions-luarocks@v4
 
-    - name: runtest.sh
-      run:
-        ./runtest.sh
+      - name: runtest.sh
+        run: ./runtest.sh
