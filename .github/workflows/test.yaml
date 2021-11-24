@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Install nuspell
         run: |
-          wget https://github.com/nuspell/nuspell/archive/refs/tags/v5.0.0.tar.gz -O - | tar -xz
+          wget https://github.com/nuspell/nuspell/archive/refs/tags/v5.0.1.tar.gz -O - | tar -xz
           cmake -S nuspell-* -B nuspell-build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=0
           cmake --build nuspell-build -j 4
           sudo cmake --install nuspell-build
