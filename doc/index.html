@@ -1,0 +1,321 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>nuspell</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>lua-nuspell</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#Functions">Functions</a></li>
+<li><a href="#Class_Dictionary">Class Dictionary </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>nuspell</strong></li>
+</ul>
+<h2>Manual</h2>
+<ul class="nowrap">
+  <li><a href="manual/README.md.html">README</a></li>
+</ul>
+<h2>Examples</h2>
+<ul class="nowrap">
+  <li><a href="examples/test.lua.html">test.lua</a></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>nuspell</code></h1>
+<p>lua-nuspell is a set of Lua 5.x bindings for Nuspell spellchecking C++ library.</p>
+<p>
+
+</p>
+
+
+<h2><a href="#Functions">Functions</a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#get_default_dir_paths">get_default_dir_paths ()</a></td>
+	<td class="summary">Get the paths of the default directories to be searched for dictionaries.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#get_libreoffice_dir_paths">get_libreoffice_dir_paths ()</a></td>
+	<td class="summary">Get the paths of the LibreOffice's directories to be searched for dictionaries.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#search_dirs_for_dicts">search_dirs_for_dicts (dir_paths)</a></td>
+	<td class="summary">Search the directories for dictionaries.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#search_default_dirs_for_dicts">search_default_dirs_for_dicts ()</a></td>
+	<td class="summary">Search the default directories for dictionaries.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#search_dirs_for_one_dict">search_dirs_for_one_dict (dir_paths, dict_name_stem)</a></td>
+	<td class="summary">Serach the directories for only one dictionary.</td>
+	</tr>
+</table>
+<h2><a href="#Class_Dictionary">Class Dictionary </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Dictionary:load_aff_dic">Dictionary:load_aff_dic (aff_path)</a></td>
+	<td class="summary">Load the dictionary from file.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Dictionary:spell">Dictionary:spell (word)</a></td>
+	<td class="summary">Checks if a given word is correct</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Dictionary:suggest">Dictionary:suggest (word)</a></td>
+	<td class="summary">Suggests correct words for a given incorrect word</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="Functions"></a>Functions</h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "get_default_dir_paths"></a>
+    <strong>get_default_dir_paths ()</strong>
+    </dt>
+    <dd>
+    Get the paths of the default directories to be searched for dictionaries.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        table of directory paths
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "get_libreoffice_dir_paths"></a>
+    <strong>get_libreoffice_dir_paths ()</strong>
+    </dt>
+    <dd>
+    Get the paths of the LibreOffice's directories to be searched for dictionaries.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        table of directory paths
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "search_dirs_for_dicts"></a>
+    <strong>search_dirs_for_dicts (dir_paths)</strong>
+    </dt>
+    <dd>
+    Search the directories for dictionaries. </p>
+
+<p> This function searches the directories for files that represent dictionaries and for each found dictionary it appends the path of the .aff file to @p dict_list. One dictionary consts of two files, .aff and .dic, and both need to exist, but only the .aff is added.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dir_paths</span>
+         table of directory paths
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        table of the found dictionaries
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "search_default_dirs_for_dicts"></a>
+    <strong>search_default_dirs_for_dicts ()</strong>
+    </dt>
+    <dd>
+    Search the default directories for dictionaries. </p>
+
+<p> This is just a convenience that call two other functions.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        table of the found dictionaries
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <li><a href="index.html#get_default_dir_paths">get_default_dir_paths</a></li>
+         <li><a href="index.html#search_dirs_for_dicts">search_dirs_for_dicts</a></li>
+    </ul>
+
+
+</dd>
+    <dt>
+    <a name = "search_dirs_for_one_dict"></a>
+    <strong>search_dirs_for_one_dict (dir_paths, dict_name_stem)</strong>
+    </dt>
+    <dd>
+    Serach the directories for only one dictionary.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dir_paths</span>
+         list of directories
+        </li>
+        <li><span class="parameter">dict_name_stem</span>
+         dictionary name, filename without extension (stem)
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        path to the .aff file of the dictionary or empty object if not found
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header has-description"><a name="Class_Dictionary"></a>Class Dictionary </h2>
+
+          <div class="section-description">
+          Dictionary object
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "Dictionary:load_aff_dic"></a>
+    <strong>Dictionary:load_aff_dic (aff_path)</strong>
+    </dt>
+    <dd>
+    Load the dictionary from file.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">aff_path</span>
+         path to .aff file. The path of .dic is inffered from this.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Dictionary
+    </ol>
+
+    <h3>Raises:</h3>
+    <code>Dictionary_Loading_Error</code> on error
+
+
+
+</dd>
+    <dt>
+    <a name = "Dictionary:spell"></a>
+    <strong>Dictionary:spell (word)</strong>
+    </dt>
+    <dd>
+    Checks if a given word is correct
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">word</span>
+         any word
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true if correct, false otherwise
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Dictionary:suggest"></a>
+    <strong>Dictionary:suggest (word)</strong>
+    </dt>
+    <dd>
+    Suggests correct words for a given incorrect word
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">word</span>
+         incorrect word
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        table populated with the suggestions
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2022-07-03 22:07:47 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

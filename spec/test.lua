@@ -4,8 +4,9 @@ local nuspell = require('nuspell')
 local util = require('util')
 
 local function dictionary(word, lang)
-    local dirs = nuspell.search_default_dirs_for_dicts()
-    local dict = nuspell.Dictionary.load_from_path(nuspell.find_dictionary(dirs, lang))
+    local dirs = nuspell.get_default_dir_paths()
+    local aff = nuspell.search_dirs_for_one_dict(dirs, lang)
+    local dict = nuspell.Dictionary.load_aff_dic(aff)
     return dict:spell(word), dict:suggest(word)
 end
 
@@ -39,18 +40,11 @@ local tests = {
         { nuspell.search_default_dirs_for_dicts() },
     },
     {
-        'find_dictionary',
-        nuspell.find_dictionary,
-        { { { 'a', 'b' }, { 'c', 'd' }, { 'a', 'e' } }, 'a' },
-        true,
-        { 'b' },
-    },
-    {
-        'load_from_path',
-        nuspell.Dictionary.load_from_path,
+        'load_aff_dic',
+        nuspell.Dictionary.load_aff_dic,
         { 'missing_path' },
         false,
-        { 'Aff file missing_path.aff not found' },
+        { 'Aff file missing_path not found' },
     },
     {
         'Dictionary',

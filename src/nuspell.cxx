@@ -5,6 +5,7 @@
  */
 #include <nuspell/finder.hxx>
 #include <nuspell/dictionary.hxx>
+#include <iostream>
 
 extern "C" {
 #include <lua.h>
@@ -22,28 +23,7 @@ extern "C" {
 
 #define MT "Dictionary"
 
-static inline auto return_array_of_pairs(lua_State *L,
-										 std::vector<std::pair<std::string, std::string>> &pairs)
-{
-	// {#pairs}
-	lua_createtable(L, pairs.size(), 0);
-	for (std::size_t i = 0; i < pairs.size(); i++) {
-		// {#pairs}, {2}
-		lua_createtable(L, 2, 0);
-		// {#pairs}, {2}, pairs[i].first
-		lua_pushstring(L, pairs[i].first.c_str());
-		// {#pairs}, {2} <- pairs[i].first
-		lua_rawseti(L, -2, 1);
-		// {#pairs}, {2}, pairs[i].second
-		lua_pushstring(L, pairs[i].second.c_str());
-		// {#pairs}, {2} <- pairs[i].second
-		lua_rawseti(L, -2, 2);
-		// {#pairs} <- {2}
-		lua_rawseti(L, -2, i + 1);
-	}
-}
-
-static inline auto return_array(lua_State *L, std::vector<std::string> &elements)
+template <typename vector> static inline auto return_array(lua_State *L, vector &elements)
 {
 	// {#elements}
 	lua_createtable(L, elements.size(), 0);
@@ -58,7 +38,7 @@ static inline auto return_array(lua_State *L, std::vector<std::string> &elements
 
 static inline auto read_array(lua_State *L)
 {
-	auto elements = std::vector<std::string>();
+	auto elements = std::vector<std::filesystem::path>();
 	// check first argument is a table
 	luaL_checktype(L, 1, LUA_TTABLE);
 	// {#elements}
@@ -72,57 +52,22 @@ static inline auto read_array(lua_State *L)
 		// {#paths_size} -> e
 		lua_rawgeti(L, -1, i);
 		// {#paths_size}, e
-		elements.push_back(luaL_checkstring(L, -1));
+		elements.push_back(std::filesystem::path(luaL_checkstring(L, -1)));
 		// {#paths_size}
 		lua_pop(L, 1);
 	}
 	return elements;
 }
 
-static inline auto read_array_of_pairs(lua_State *L)
-{
-	auto pairs = std::vector<std::pair<std::string, std::string>>();
-	auto pair = std::pair<std::string, std::string>();
-	// check first argument is a table
-	luaL_checktype(L, 1, LUA_TTABLE);
-	// {#pairs}
-	lua_settop(L, 1);
-#if LUA_VERSION_NUM >= 502
-	auto pairs_size = lua_rawlen(L, 1);
-#else
-	auto pairs_size = lua_objlen(L, 1);
-#endif
-	for (std::size_t i = 1; i <= pairs_size; i++) {
-		// {#pairs_size} -> {2}
-		lua_rawgeti(L, -1, i);
-		// {#pairs_size}, {2} -> first
-		lua_rawgeti(L, -1, 1);
-		// {#pairs_size}, {2}, first
-		pair.first = luaL_checkstring(L, -1);
-		// {#pairs_size}, {2}
-		lua_pop(L, 1);
-		// {#pairs_size}, {2} -> second
-		lua_rawgeti(L, -1, 2);
-		// {#pairs_size}, {2}, second
-		pair.second = luaL_checkstring(L, -1);
-		// {#pairs_size}, {2}
-		lua_pop(L, 1);
-		// {#pairs_size}
-		lua_pop(L, 1);
-		pairs.push_back(pair);
-	}
-	return pairs;
-}
-
 /***
  * Get the paths of the default directories to be searched for dictionaries.
  *
  * @function get_default_dir_paths
- * @return `dir_paths` table of directory paths
+ * @return table of directory paths
  */
 static auto l_get_default_dir_paths(lua_State *L)
 {
-	auto path = std::vector<std::string>();
+	auto path = std::vector<std::filesystem::path>();
 	nuspell::append_default_dir_paths(path);
 	return_array(L, path);
 	return 1;
@@ -134,11 +79,11 @@ static auto l_get_default_dir_paths(lua_State *L)
  * @warning This function shall not be called from LibreOffice or modules that may end up being used by LibreOffice. It is mainly intended to be used by the CLI tool.
  *
  * @function get_libreoffice_dir_paths
- * @return `dir_paths` table of directory paths
+ * @return table of directory paths
  */
 static auto l_get_libreoffice_dir_paths(lua_State *L)
 {
-	auto path = std::vector<std::string>();
+	auto path = std::vector<std::filesystem::path>();
 	nuspell::append_libreoffice_dir_paths(path);
 	return_array(L, path);
 	return 1;
@@ -147,59 +92,57 @@ static auto l_get_libreoffice_dir_paths(lua_State *L)
 /***
  * Search the directories for dictionaries.
  *
- * This function searches the directory for files that represent a dictionary and for each one found it appends the pair of dictionary name and filepath to dictionary, both without the filename extension (.aff or .dic).
+ * This function searches the directories for files that represent dictionaries and for each found dictionary it appends the path of the .aff file to @p dict_list. One dictionary consts of two files, .aff and .dic, and both need to exist, but only the .aff is added.
  *
- * For example for the files /dict/dir/en_US.dic and /dict/dir/en_US.aff the following pair will be appended ("en_US", "/dict/dir/en_US").
  *
  * @function search_dirs_for_dicts
  * @param dir_paths table of directory paths
- * @return `dict_list` table of the found dictionaries
+ * @return table of the found dictionaries
  */
 static auto l_search_dirs_for_dicts(lua_State *L)
 {
 	auto dir_paths = read_array(L);
-	auto dict_list = std::vector<std::pair<std::string, std::string>>();
+	auto dict_list = std::vector<std::filesystem::path>();
 	nuspell::search_dirs_for_dicts(dir_paths, dict_list);
-	return_array_of_pairs(L, dict_list);
+	return_array(L, dict_list);
 	return 1;
 }
 
 /***
  * Search the default directories for dictionaries.
- *
+ * 
+ * This is just a convenience that call two other functions.
  * @see get_default_dir_paths
  * @see search_dirs_for_dicts
  *
  * @function search_default_dirs_for_dicts
- * @return `dict_list` table of the found dictionaries
+ * @return table of the found dictionaries
  */
 static auto l_search_default_dirs_for_dicts(lua_State *L)
 {
-	auto dict_list = std::vector<std::pair<std::string, std::string>>();
-	nuspell::search_default_dirs_for_dicts(dict_list);
-	return_array_of_pairs(L, dict_list);
+	auto dict_list = nuspell::search_default_dirs_for_dicts();
+	return_array(L, dict_list);
 	return 1;
 }
 
 /***
- * Find dictionary path given the name.
+ * Serach the directories for only one dictionary.
  *
- * Find the first dictionary whose name matches p dict_name.
- *
- * @function find_dictionary
- * @param dict_list table of the found dictionaries
- * @param dict_name dictionary name
- * @return `dict_path` path of the found dictionary or nil if not found
+ * @function search_dirs_for_one_dict
+ * @param dir_paths list of directories
+ * @param dict_name_stem dictionary name, filename without extension (stem)
+ * @return path to the .aff file of the dictionary or empty object if not found
  */
-static auto l_find_dictionary(lua_State *L)
+static auto l_search_dirs_for_one_dict(lua_State *L)
 {
 	const std::string dict_name = luaL_checkstring(L, 2);
-	auto dict_list = read_array_of_pairs(L);
-	auto finded = nuspell::find_dictionary(dict_list, dict_name);
-	if (end(dict_list) == finded) {
+	auto dict_list = read_array(L);
+	auto finded = nuspell::search_dirs_for_one_dict(dict_list, dict_name);
+	std::cout << dict_name << dict_list[0] << finded << std::endl;
+	if (finded.empty()) {
 		lua_pushnil(L);
 	} else {
-		lua_pushstring(L, finded->second.c_str());
+		lua_pushstring(L, finded.c_str());
 	}
 	return 1;
 }
@@ -221,23 +164,21 @@ static auto l_Dictionary_destructor(lua_State *L)
 	delete Dictionary;
 	return 0;
 }
-/***
- * Create a dictionary from files
+/**
+ * Load the dictionary from file.
  *
- * @static
- * @function load_from_path
- * @param file_path_without_extension path *without* extensions (without .dic or
- * .aff)
- * @return `Dictionary`
+ * @function load_aff_dic
+ * @param aff_path path to .aff file. The path of .dic is inffered from this.
+ * @return Dictionary
  * @raise `Dictionary_Loading_Error` on error
  */
-static auto l_Dictionary_load_from_path(lua_State *L)
+static auto l_Dictionary_load_aff_dic(lua_State *L)
 {
-	const std::string file_path_without_extensions = luaL_checkstring(L, 1);
+	const auto path = std::filesystem::path(luaL_checkstring(L, 1));
 	auto dictionary = (nuspell::Dictionary **)lua_newuserdata(L, sizeof(nuspell::Dictionary *));
 	*dictionary = new nuspell::Dictionary();
 	try {
-		**dictionary = nuspell::Dictionary::load_from_path(file_path_without_extensions);
+		(**dictionary).load_aff_dic(path);
 	} catch (nuspell::Dictionary_Loading_Error e) {
 		delete *dictionary;
 		return luaL_error(L, e.what());
@@ -248,11 +189,11 @@ static auto l_Dictionary_load_from_path(lua_State *L)
 }
 
 /***
- * Checks if a given word is correct
+ * Checks if a given word is correct.
  *
  * @function spell
  * @param word any word
- * @return `is_correct` true if correct, false otherwise
+ * @return true if correct, false otherwise
  */
 static auto l_Dictionary_spell(lua_State *L)
 {
@@ -263,11 +204,11 @@ static auto l_Dictionary_spell(lua_State *L)
 }
 
 /***
- * Suggests correct words for a given incorrect word
+ * Suggests correct words for a given incorrect word.
  *
  * @function suggest
  * @param word incorrect word
- * @return `suggestions` table populated with the suggestions
+ * @return table populated with the suggestions
  */
 static auto l_Dictionary_suggest(lua_State *L)
 {
@@ -286,7 +227,7 @@ extern "C" auto luaopen_nuspell(lua_State *L) -> int
 		{ "get_libreoffice_dir_paths", l_get_libreoffice_dir_paths },
 		{ "search_dirs_for_dicts", l_search_dirs_for_dicts },
 		{ "search_default_dirs_for_dicts", l_search_default_dirs_for_dicts },
-		{ "find_dictionary", l_find_dictionary },
+		{ "search_dirs_for_one_dict", l_search_dirs_for_one_dict },
 		{ NULL, NULL }
 	};
 
@@ -296,7 +237,7 @@ extern "C" auto luaopen_nuspell(lua_State *L) -> int
 	luaL_register(L, PROJECT_NAME, Finder_Regs);
 #endif
 
-	static const luaL_Reg Dictionary_Regs[] = { { "load_from_path", l_Dictionary_load_from_path },
+	static const luaL_Reg Dictionary_Regs[] = { { "load_aff_dic", l_Dictionary_load_aff_dic },
 												{ "spell", l_Dictionary_spell },
 												{ "suggest", l_Dictionary_suggest },
 												{ "__gc", l_Dictionary_destructor },
