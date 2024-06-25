@@ -5,9 +5,9 @@ jobs:
     name: Cxx Formatting Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Run clang-format check
-        uses: jidicula/clang-format-action@v4.6.2
+        uses: jidicula/clang-format-action@v4.13.0
         with:
           clang-format-version: 13
           check-path: src
@@ -16,9 +16,10 @@ jobs:
     name: Lua Formatting Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: JohnnyMorganz/stylua-action@v1.1.2
+      - uses: actions/checkout@v4
+      - name: Run stylua check
+        uses: JohnnyMorganz/stylua-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          version: v0.15.1
+          version: v0.20.0
           args: --check spec
